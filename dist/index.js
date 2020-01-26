@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(622);
+/******/ 		return __webpack_require__(907);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -356,7 +356,7 @@ module.exports = osName;
 
 "use strict";
 
-const path = __webpack_require__(277);
+const path = __webpack_require__(622);
 const childProcess = __webpack_require__(129);
 const crossSpawn = __webpack_require__(99);
 const stripEof = __webpack_require__(571);
@@ -819,7 +819,7 @@ var isWindows = process.platform === 'win32' ||
     process.env.OSTYPE === 'cygwin' ||
     process.env.OSTYPE === 'msys'
 
-var path = __webpack_require__(277)
+var path = __webpack_require__(622)
 var COLON = isWindows ? ';' : ':'
 var isexe = __webpack_require__(881)
 
@@ -2227,7 +2227,7 @@ module.exports = eos;
 "use strict";
 
 
-const path = __webpack_require__(277);
+const path = __webpack_require__(622);
 const niceTry = __webpack_require__(23);
 const resolveCommand = __webpack_require__(386);
 const escape = __webpack_require__(597);
@@ -2474,7 +2474,7 @@ module.exports = (promise, onFinally) => {
 
 "use strict";
 
-const path = __webpack_require__(277);
+const path = __webpack_require__(622);
 const pathKey = __webpack_require__(839);
 
 module.exports = opts => {
@@ -2623,9 +2623,158 @@ exports.createTokenAuth = createTokenAuth;
 /***/ }),
 
 /***/ 277:
-/***/ (function(module) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-module.exports = require("path");
+"use strict";
+
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var endpoint = __webpack_require__(754);
+var universalUserAgent = __webpack_require__(773);
+var isPlainObject = _interopDefault(__webpack_require__(154));
+var nodeFetch = _interopDefault(__webpack_require__(770));
+var requestError = __webpack_require__(717);
+
+const VERSION = "5.3.1";
+
+function getBufferResponse(response) {
+  return response.arrayBuffer();
+}
+
+function fetchWrapper(requestOptions) {
+  if (isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
+    requestOptions.body = JSON.stringify(requestOptions.body);
+  }
+
+  let headers = {};
+  let status;
+  let url;
+  const fetch = requestOptions.request && requestOptions.request.fetch || nodeFetch;
+  return fetch(requestOptions.url, Object.assign({
+    method: requestOptions.method,
+    body: requestOptions.body,
+    headers: requestOptions.headers,
+    redirect: requestOptions.redirect
+  }, requestOptions.request)).then(response => {
+    url = response.url;
+    status = response.status;
+
+    for (const keyAndValue of response.headers) {
+      headers[keyAndValue[0]] = keyAndValue[1];
+    }
+
+    if (status === 204 || status === 205) {
+      return;
+    } // GitHub API returns 200 for HEAD requsets
+
+
+    if (requestOptions.method === "HEAD") {
+      if (status < 400) {
+        return;
+      }
+
+      throw new requestError.RequestError(response.statusText, status, {
+        headers,
+        request: requestOptions
+      });
+    }
+
+    if (status === 304) {
+      throw new requestError.RequestError("Not modified", status, {
+        headers,
+        request: requestOptions
+      });
+    }
+
+    if (status >= 400) {
+      return response.text().then(message => {
+        const error = new requestError.RequestError(message, status, {
+          headers,
+          request: requestOptions
+        });
+
+        try {
+          let responseBody = JSON.parse(error.message);
+          Object.assign(error, responseBody);
+          let errors = responseBody.errors; // Assumption `errors` would always be in Array Fotmat
+
+          error.message = error.message + ": " + errors.map(JSON.stringify).join(", ");
+        } catch (e) {// ignore, see octokit/rest.js#684
+        }
+
+        throw error;
+      });
+    }
+
+    const contentType = response.headers.get("content-type");
+
+    if (/application\/json/.test(contentType)) {
+      return response.json();
+    }
+
+    if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
+      return response.text();
+    }
+
+    return getBufferResponse(response);
+  }).then(data => {
+    return {
+      status,
+      url,
+      headers,
+      data
+    };
+  }).catch(error => {
+    if (error instanceof requestError.RequestError) {
+      throw error;
+    }
+
+    throw new requestError.RequestError(error.message, 500, {
+      headers,
+      request: requestOptions
+    });
+  });
+}
+
+function withDefaults(oldEndpoint, newDefaults) {
+  const endpoint = oldEndpoint.defaults(newDefaults);
+
+  const newApi = function (route, parameters) {
+    const endpointOptions = endpoint.merge(route, parameters);
+
+    if (!endpointOptions.request || !endpointOptions.request.hook) {
+      return fetchWrapper(endpoint.parse(endpointOptions));
+    }
+
+    const request = (route, parameters) => {
+      return fetchWrapper(endpoint.parse(endpoint.merge(route, parameters)));
+    };
+
+    Object.assign(request, {
+      endpoint,
+      defaults: withDefaults.bind(null, endpoint)
+    });
+    return endpointOptions.request.hook(request, endpointOptions);
+  };
+
+  return Object.assign(newApi, {
+    endpoint,
+    defaults: withDefaults.bind(null, endpoint)
+  });
+}
+
+const request = withDefaults(endpoint.endpoint, {
+  headers: {
+    "user-agent": `octokit-request.js/${VERSION} ${universalUserAgent.getUserAgent()}`
+  }
+});
+
+exports.request = request;
+//# sourceMappingURL=index.js.map
+
 
 /***/ }),
 
@@ -4460,7 +4609,7 @@ function graphql (request, query, options) {
 "use strict";
 
 
-const path = __webpack_require__(277);
+const path = __webpack_require__(622);
 const which = __webpack_require__(100);
 const pathKey = __webpack_require__(839)();
 
@@ -5912,7 +6061,7 @@ function addHook (state, kind, name, hook) {
 
 module.exports = Octokit;
 
-const { request } = __webpack_require__(714);
+const { request } = __webpack_require__(277);
 const Hook = __webpack_require__(344);
 
 const parseClientOptions = __webpack_require__(330);
@@ -6058,30 +6207,9 @@ module.exports = require("events");
 /***/ }),
 
 /***/ 622:
-/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
+/***/ (function(module) {
 
-const core = __webpack_require__(827);
-const github = __webpack_require__(148);
-
-try
-{
-	// `who-to-greet` input defined in action metadata file
-	const nameToGreet = core.getInput('who-to-greet');
-	console.log(`Hello ${nameToGreet}!`);
-	const time = (new Date()).toTimeString();
-	core.setOutput("time", time);
-
-	core.setOutput("os", process.platform);
-
-	// Get the JSON webhook payload for the event that triggered the workflow
-	const payload = JSON.stringify(github.context.payload, undefined, 2)
-	console.log(`The event payload: ${payload}`);
-}
-catch (error)
-{
-	core.setFailed(error.message);
-}
-
+module.exports = require("path");
 
 /***/ }),
 
@@ -6464,162 +6592,6 @@ function authenticate(state, options) {
 
   state.auth = options;
 }
-
-
-/***/ }),
-
-/***/ 714:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var endpoint = __webpack_require__(754);
-var universalUserAgent = __webpack_require__(773);
-var isPlainObject = _interopDefault(__webpack_require__(154));
-var nodeFetch = _interopDefault(__webpack_require__(770));
-var requestError = __webpack_require__(717);
-
-const VERSION = "5.3.1";
-
-function getBufferResponse(response) {
-  return response.arrayBuffer();
-}
-
-function fetchWrapper(requestOptions) {
-  if (isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
-    requestOptions.body = JSON.stringify(requestOptions.body);
-  }
-
-  let headers = {};
-  let status;
-  let url;
-  const fetch = requestOptions.request && requestOptions.request.fetch || nodeFetch;
-  return fetch(requestOptions.url, Object.assign({
-    method: requestOptions.method,
-    body: requestOptions.body,
-    headers: requestOptions.headers,
-    redirect: requestOptions.redirect
-  }, requestOptions.request)).then(response => {
-    url = response.url;
-    status = response.status;
-
-    for (const keyAndValue of response.headers) {
-      headers[keyAndValue[0]] = keyAndValue[1];
-    }
-
-    if (status === 204 || status === 205) {
-      return;
-    } // GitHub API returns 200 for HEAD requsets
-
-
-    if (requestOptions.method === "HEAD") {
-      if (status < 400) {
-        return;
-      }
-
-      throw new requestError.RequestError(response.statusText, status, {
-        headers,
-        request: requestOptions
-      });
-    }
-
-    if (status === 304) {
-      throw new requestError.RequestError("Not modified", status, {
-        headers,
-        request: requestOptions
-      });
-    }
-
-    if (status >= 400) {
-      return response.text().then(message => {
-        const error = new requestError.RequestError(message, status, {
-          headers,
-          request: requestOptions
-        });
-
-        try {
-          let responseBody = JSON.parse(error.message);
-          Object.assign(error, responseBody);
-          let errors = responseBody.errors; // Assumption `errors` would always be in Array Fotmat
-
-          error.message = error.message + ": " + errors.map(JSON.stringify).join(", ");
-        } catch (e) {// ignore, see octokit/rest.js#684
-        }
-
-        throw error;
-      });
-    }
-
-    const contentType = response.headers.get("content-type");
-
-    if (/application\/json/.test(contentType)) {
-      return response.json();
-    }
-
-    if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
-      return response.text();
-    }
-
-    return getBufferResponse(response);
-  }).then(data => {
-    return {
-      status,
-      url,
-      headers,
-      data
-    };
-  }).catch(error => {
-    if (error instanceof requestError.RequestError) {
-      throw error;
-    }
-
-    throw new requestError.RequestError(error.message, 500, {
-      headers,
-      request: requestOptions
-    });
-  });
-}
-
-function withDefaults(oldEndpoint, newDefaults) {
-  const endpoint = oldEndpoint.defaults(newDefaults);
-
-  const newApi = function (route, parameters) {
-    const endpointOptions = endpoint.merge(route, parameters);
-
-    if (!endpointOptions.request || !endpointOptions.request.hook) {
-      return fetchWrapper(endpoint.parse(endpointOptions));
-    }
-
-    const request = (route, parameters) => {
-      return fetchWrapper(endpoint.parse(endpoint.merge(route, parameters)));
-    };
-
-    Object.assign(request, {
-      endpoint,
-      defaults: withDefaults.bind(null, endpoint)
-    });
-    return endpointOptions.request.hook(request, endpointOptions);
-  };
-
-  return Object.assign(newApi, {
-    endpoint,
-    defaults: withDefaults.bind(null, endpoint)
-  });
-}
-
-const request = withDefaults(endpoint.endpoint, {
-  headers: {
-    "user-agent": `octokit-request.js/${VERSION} ${universalUserAgent.getUserAgent()}`
-  }
-});
-
-exports.request = request;
-//# sourceMappingURL=index.js.map
 
 
 /***/ }),
@@ -10760,7 +10732,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const command_1 = __webpack_require__(215);
 const os = __importStar(__webpack_require__(87));
-const path = __importStar(__webpack_require__(277));
+const path = __importStar(__webpack_require__(622));
 /**
  * The code to exit an action
  */
@@ -11145,10 +11117,57 @@ module.exports = /^#!.*/;
 
 /***/ }),
 
+/***/ 907:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(827));
+const github = __importStar(__webpack_require__(148));
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // `who-to-greet` input defined in action metadata file
+            const nameToGreet = core.getInput('who-to-greet');
+            console.log(`Hello ${nameToGreet}!`);
+            const time = (new Date()).toTimeString();
+            core.setOutput("time", time);
+            core.setOutput("os", process.platform);
+            // Get the JSON webhook payload for the event that triggered the workflow
+            const payload = JSON.stringify(github.context.payload, undefined, 2);
+            console.log(`The event payload: ${payload}`);
+        }
+        catch (error) {
+            core.setFailed(error.message);
+        }
+    });
+}
+run();
+
+
+/***/ }),
+
 /***/ 935:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-const { request } = __webpack_require__(714)
+const { request } = __webpack_require__(277)
 const getUserAgent = __webpack_require__(696)
 
 const version = __webpack_require__(519).version
