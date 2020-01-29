@@ -1,21 +1,31 @@
 import * as core from '@actions/core'
-import * as github from '@actions/github'
+import * as exec from '@actions/exec'
 
 async function run(): Promise<void>
 {
 	try
 	{
-		// `who-to-greet` input defined in action metadata file
-		const nameToGreet: string = core.getInput('who-to-greet');
-		console.log(`Hello ${nameToGreet}!`);
-		const time = (new Date()).toTimeString();
-		core.setOutput("time", time);
+		const type: string = core.getInput('type');
 
-		core.setOutput("os", process.platform);
-
-		// Get the JSON webhook payload for the event that triggered the workflow
-		const payload = JSON.stringify(github.context.payload, undefined, 2)
-		console.log(`The event payload: ${payload}`);
+		if (process.platform.toString() === "linux")
+		{
+			if (type === "native")
+			{
+				await exec.exec("mkdir", ["-p", "build"]);
+				await exec.exec("cd", ["build"]);
+				await exec.exec("cmake", [".."]);
+				await exec.exec("make");
+				await exec.exec("./unittest_test");
+			}
+			else
+			{
+				await exec.exec("mkdir", ["-p", "build"]);
+				await exec.exec("cd", ["build"]);
+				await exec.exec("emconfigure", ["cmake", ".."]);
+				await exec.exec("make");
+				await exec.exec("node", ["unittest_test.js"]);
+			}
+		}
 	}
 	catch (error)
 	{
