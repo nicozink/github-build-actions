@@ -9,7 +9,7 @@ async function run(): Promise<void>
 
 		if (process.platform.toString() === "linux")
 		{
-			if (type === "native")
+			if (type.toString() === "native")
 			{
 				await exec.exec("cmake", ["."]);
 				await exec.exec("make");

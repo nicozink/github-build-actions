@@ -1552,7 +1552,7 @@ function run() {
         try {
             const type = core.getInput('type');
             if (process.platform.toString() === "linux") {
-                if (type === "native") {
+                if (type.toString() === "native") {
                     yield exec.exec("cmake", ["."]);
                     yield exec.exec("make");
                     yield exec.exec("./unittest_test");
