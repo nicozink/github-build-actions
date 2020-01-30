@@ -1553,16 +1553,12 @@ function run() {
             const type = core.getInput('type');
             if (process.platform.toString() === "linux") {
                 if (type === "native") {
-                    yield exec.exec("mkdir", ["-p", "build"]);
-                    yield exec.exec("cd", ["build"]);
-                    yield exec.exec("cmake", [".."]);
+                    yield exec.exec("cmake", ["."]);
                     yield exec.exec("make");
                     yield exec.exec("./unittest_test");
                 }
                 else {
-                    yield exec.exec("mkdir", ["-p", "build"]);
-                    yield exec.exec("cd", ["build"]);
-                    yield exec.exec("emconfigure", ["cmake", ".."]);
+                    yield exec.exec("emconfigure", ["cmake", "."]);
                     yield exec.exec("make");
                     yield exec.exec("node", ["unittest_test.js"]);
                 }

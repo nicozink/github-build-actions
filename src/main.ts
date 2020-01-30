@@ -11,17 +11,13 @@ async function run(): Promise<void>
 		{
 			if (type === "native")
 			{
-				await exec.exec("mkdir", ["-p", "build"]);
-				await exec.exec("cd", ["build"]);
-				await exec.exec("cmake", [".."]);
+				await exec.exec("cmake", ["."]);
 				await exec.exec("make");
 				await exec.exec("./unittest_test");
 			}
 			else
 			{
-				await exec.exec("mkdir", ["-p", "build"]);
-				await exec.exec("cd", ["build"]);
-				await exec.exec("emconfigure", ["cmake", ".."]);
+				await exec.exec("emconfigure", ["cmake", "."]);
 				await exec.exec("make");
 				await exec.exec("node", ["unittest_test.js"]);
 			}
