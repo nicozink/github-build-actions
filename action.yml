@@ -1,12 +1,12 @@
 name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
-	os:
-		description: 'The operating system'
-		required: true
-	type:
-		description: 'The build type'
-		required: true
+  os:
+    description: 'The operating system'
+    required: true
+  type:
+    description: 'The build type'
+    required: true
 runs:
-	using: 'node12'
-	main: 'dist/index.js'
+  using: 'node12'
+  main: 'dist/index.js'
