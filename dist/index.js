@@ -1551,6 +1551,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const type = core.getInput('type');
+            yield exec.exec("git", ["submodule", "update", "--init"]);
             if (process.platform.toString() === "linux") {
                 if (type.toString() === "native") {
                     yield exec.exec("cmake", ["."]);

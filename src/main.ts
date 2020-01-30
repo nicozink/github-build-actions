@@ -7,6 +7,8 @@ async function run(): Promise<void>
 	{
 		const type: string = core.getInput('type');
 
+		await exec.exec("git", ["submodule", "update", "--init"]);
+
 		if (process.platform.toString() === "linux")
 		{
 			if (type.toString() === "native")
