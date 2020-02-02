@@ -24,6 +24,12 @@ async function run(): Promise<void>
 				await exec.exec("node", ["unittest_test.js"]);
 			}
 		}
+		else if (process.platform.toString() === "win32")
+		{
+			await exec.exec("cmake", ["."]);
+			await exec.exec("msbuild unittest.sln");
+			await exec.exec("Debug\\unittest_test.sln");
+		}
 	}
 	catch (error)
 	{

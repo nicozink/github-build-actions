@@ -1564,6 +1564,11 @@ function run() {
                     yield exec.exec("node", ["unittest_test.js"]);
                 }
             }
+            else if (process.platform.toString() === "win32") {
+                yield exec.exec("cmake", ["."]);
+                yield exec.exec("msbuild unittest.sln");
+                yield exec.exec("Debug\\unittest_test.sln");
+            }
         }
         catch (error) {
             core.setFailed(error.message);
