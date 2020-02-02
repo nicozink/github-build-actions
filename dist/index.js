@@ -1567,7 +1567,7 @@ function run() {
             else if (process.platform.toString() === "win32") {
                 yield exec.exec("cmake", ["."]);
                 yield exec.exec("msbuild unittest.sln");
-                yield exec.exec("Debug\\unittest_test.sln");
+                yield exec.exec("Debug\\unittest_test.exe");
             }
         }
         catch (error) {

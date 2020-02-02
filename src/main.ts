@@ -28,7 +28,7 @@ async function run(): Promise<void>
 		{
 			await exec.exec("cmake", ["."]);
 			await exec.exec("msbuild unittest.sln");
-			await exec.exec("Debug\\unittest_test.sln");
+			await exec.exec("Debug\\unittest_test.exe");
 		}
 	}
 	catch (error)
