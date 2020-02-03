@@ -1552,23 +1552,14 @@ function run() {
         try {
             const type = core.getInput('type');
             yield exec.exec("git", ["submodule", "update", "--init"]);
-            if (process.platform.toString() === "linux") {
-                if (type.toString() === "native") {
-                    yield exec.exec("cmake", ["."]);
-                    yield exec.exec("make");
-                    yield exec.exec("./unittest_test");
-                }
-                else {
-                    yield exec.exec("emconfigure", ["cmake", "."]);
-                    yield exec.exec("make");
-                    yield exec.exec("node", ["unittest_test.js"]);
-                }
-            }
-            else if (process.platform.toString() === "win32") {
+            if (type.toString() === "native") {
                 yield exec.exec("cmake", ["."]);
-                yield exec.exec("msbuild unittest.sln");
-                yield exec.exec("Debug\\unittest_test.exe");
             }
+            else {
+                yield exec.exec("emconfigure", ["cmake", "."]);
+            }
+            yield exec.exec("cmake --build . --config Release");
+            yield exec.exec("ctest -VV -C Release");
         }
         catch (error) {
             core.setFailed(error.message);

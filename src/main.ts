@@ -9,27 +9,18 @@ async function run(): Promise<void>
 
 		await exec.exec("git", ["submodule", "update", "--init"]);
 
-		if (process.platform.toString() === "linux")
-		{
-			if (type.toString() === "native")
-			{
-				await exec.exec("cmake", ["."]);
-				await exec.exec("make");
-				await exec.exec("./unittest_test");
-			}
-			else
-			{
-				await exec.exec("emconfigure", ["cmake", "."]);
-				await exec.exec("make");
-				await exec.exec("node", ["unittest_test.js"]);
-			}
-		}
-		else if (process.platform.toString() === "win32")
+		if (type.toString() === "native")
 		{
 			await exec.exec("cmake", ["."]);
-			await exec.exec("msbuild unittest.sln");
-			await exec.exec("Debug\\unittest_test.exe");
+			
 		}
+		else
+		{
+			await exec.exec("emconfigure", ["cmake", "."]);
+		}
+
+		await exec.exec("cmake --build . --config Release");
+		await exec.exec("ctest -VV -C Release");
 	}
 	catch (error)
 	{
