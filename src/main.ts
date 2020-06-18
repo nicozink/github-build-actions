@@ -9,15 +9,7 @@ async function run(): Promise<void>
 
 		await exec.exec("git", ["submodule", "update", "--init"]);
 
-		if (type.toString() === "native")
-		{
-			await exec.exec("cmake", ["."]);
-			
-		}
-		else
-		{
-			await exec.exec("emconfigure", ["cmake", "."]);
-		}
+		await exec.exec("python", ["build_tools/build_script/configure.py", "--platform", type.toString()]);
 
 		await exec.exec("cmake --build . --config Release");
 		await exec.exec("ctest -VV -C Release");

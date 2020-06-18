@@ -1552,12 +1552,7 @@ function run() {
         try {
             const type = core.getInput('type');
             yield exec.exec("git", ["submodule", "update", "--init"]);
-            if (type.toString() === "native") {
-                yield exec.exec("cmake", ["."]);
-            }
-            else {
-                yield exec.exec("emconfigure", ["cmake", "."]);
-            }
+            yield exec.exec("python", ["build_tools/build_script/configure.py", "--platform", type.toString()]);
             yield exec.exec("cmake --build . --config Release");
             yield exec.exec("ctest -VV -C Release");
         }
