@@ -1606,7 +1606,7 @@ function run() {
         try {
             const type = core.getInput('type');
             yield exec.exec("git", ["clone", "https://github.com/nicozink/build_tools", "libraries/build_tools"]);
-            yield exec.exec("python", ["build_tools/build_script/configure.py", "--platform", type.toString(), "."]);
+            yield exec.exec("python", ["libraries/build_tools/build_script/configure.py", "--platform", type.toString(), "."]);
             yield exec.exec("cmake --build . --config Release");
             yield exec.exec("ctest -VV -C Release");
         }

@@ -9,7 +9,7 @@ async function run(): Promise<void>
 
 		await exec.exec("git", ["clone", "https://github.com/nicozink/build_tools", "libraries/build_tools"]);
 
-		await exec.exec("python", ["build_tools/build_script/configure.py", "--platform", type.toString(), "."]);
+		await exec.exec("python", ["libraries/build_tools/build_script/configure.py", "--platform", type.toString(), "."]);
 
 		await exec.exec("cmake --build . --config Release");
 		await exec.exec("ctest -VV -C Release");
