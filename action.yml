@@ -7,6 +7,9 @@ inputs:
   type:
     description: 'The build type'
     required: true
+  github_token:
+    description: 'The github authentication token'
+    required: true
 runs:
   using: 'node12'
   main: 'dist/index.js'

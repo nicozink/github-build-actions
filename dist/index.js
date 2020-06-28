@@ -1605,8 +1605,9 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const type = core.getInput('type');
+            const github_token = core.getInput('github_token');
             yield exec.exec("git", ["clone", "https://github.com/nicozink/build_tools", "libraries/build_tools"]);
-            yield exec.exec("python", ["libraries/build_tools/build_script/configure.py", "--platform", type.toString(), "."]);
+            yield exec.exec("python", ["libraries/build_tools/build_script/configure.py", "--platform", type.toString(), "--github_token", github_token.toString(), "."]);
             yield exec.exec("cmake --build . --config Release");
             yield exec.exec("ctest -VV -C Release");
         }
