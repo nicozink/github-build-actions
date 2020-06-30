@@ -10,6 +10,9 @@ inputs:
   github_token:
     description: 'The github authentication token'
     required: true
+  verbose:
+    description: 'Verbose mode'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

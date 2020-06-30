@@ -1606,8 +1606,19 @@ function run() {
         try {
             const type = core.getInput('type');
             const github_token = core.getInput('github_token');
+            const verbose = core.getInput("verbose") || "false";
             yield exec.exec("git", ["clone", "https://github.com/nicozink/build_tools", "libraries/build_tools"]);
-            yield exec.exec("python", ["libraries/build_tools/build_script/configure.py", "--platform", type.toString(), "--github_token", github_token.toString(), "."]);
+            var build_command = new Array();
+            build_command.push("libraries/build_tools/build_script/configure.py");
+            build_command.push("--platform");
+            build_command.push(type.toString());
+            build_command.push("--github_token");
+            build_command.push(github_token.toString());
+            build_command.push(".");
+            if (verbose == "true") {
+                build_command.push("--verbose");
+            }
+            yield exec.exec("python", build_command);
             yield exec.exec("cmake --build . --config Release");
             yield exec.exec("ctest -VV -C Release");
         }

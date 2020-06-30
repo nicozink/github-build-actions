@@ -7,10 +7,24 @@ async function run(): Promise<void>
 	{
 		const type: string = core.getInput('type');
 		const github_token: string = core.getInput('github_token');
+		const verbose: string = core.getInput("verbose") || "false";
 
 		await exec.exec("git", ["clone", "https://github.com/nicozink/build_tools", "libraries/build_tools"]);
 
-		await exec.exec("python", ["libraries/build_tools/build_script/configure.py", "--platform", type.toString(), "--github_token", github_token.toString(), "."]);
+		var build_command = new Array<string>();
+		build_command.push("libraries/build_tools/build_script/configure.py");
+		build_command.push("--platform");
+		build_command.push(type.toString());
+		build_command.push("--github_token");
+		build_command.push(github_token.toString());
+		build_command.push(".");
+
+		if (verbose == "true")
+		{
+			build_command.push("--verbose");
+		}
+
+		await exec.exec("python", build_command);
 
 		await exec.exec("cmake --build . --config Release");
 		await exec.exec("ctest -VV -C Release");
