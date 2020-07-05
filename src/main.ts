@@ -25,9 +25,6 @@ async function run(): Promise<void>
 		}
 
 		await exec.exec("python", build_command);
-
-		await exec.exec("cmake --build . --config Release");
-		await exec.exec("ctest -VV -C Release");
 	}
 	catch (error)
 	{

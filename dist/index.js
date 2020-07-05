@@ -1619,8 +1619,6 @@ function run() {
                 build_command.push("--verbose");
             }
             yield exec.exec("python", build_command);
-            yield exec.exec("cmake --build . --config Release");
-            yield exec.exec("ctest -VV -C Release");
         }
         catch (error) {
             core.setFailed(error.message);
