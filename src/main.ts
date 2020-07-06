@@ -10,10 +10,10 @@ async function run(): Promise<void>
 		const github_token: string = core.getInput('github_token');
 		const verbose: string = core.getInput("verbose") || "false";
 
-		await exec.exec("git", ["clone", "https://github.com/nicozink/build_tools", "libraries/build_tools"]);
+		await exec.exec("git", ["clone", "https://github.com/nicozink/build_tools"]);
 
 		var build_command = new Array<string>();
-		build_command.push("libraries/build_tools/build_script/configure.py");
+		build_command.push("build_tools/build_script/configure.py");
 		build_command.push("--working_dir");
 		build_command.push("build");
 		build_command.push("--platform");

@@ -1608,9 +1608,9 @@ function run() {
             const type = core.getInput('type');
             const github_token = core.getInput('github_token');
             const verbose = core.getInput("verbose") || "false";
-            yield exec.exec("git", ["clone", "https://github.com/nicozink/build_tools", "libraries/build_tools"]);
+            yield exec.exec("git", ["clone", "https://github.com/nicozink/build_tools"]);
             var build_command = new Array();
-            build_command.push("libraries/build_tools/build_script/configure.py");
+            build_command.push("build_tools/build_script/configure.py");
             build_command.push("--working_dir");
             build_command.push("build");
             build_command.push("--platform");
