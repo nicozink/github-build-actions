@@ -1604,17 +1604,20 @@ const exec = __importStar(__webpack_require__(120));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const project_root = core.getInput('project_root');
             const type = core.getInput('type');
             const github_token = core.getInput('github_token');
             const verbose = core.getInput("verbose") || "false";
             yield exec.exec("git", ["clone", "https://github.com/nicozink/build_tools", "libraries/build_tools"]);
             var build_command = new Array();
             build_command.push("libraries/build_tools/build_script/configure.py");
+            build_command.push("--working_dir");
+            build_command.push("build");
             build_command.push("--platform");
             build_command.push(type.toString());
             build_command.push("--github_token");
             build_command.push(github_token.toString());
-            build_command.push(".");
+            build_command.push(project_root);
             if (verbose == "true") {
                 build_command.push("--verbose");
             }

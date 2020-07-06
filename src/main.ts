@@ -5,6 +5,7 @@ async function run(): Promise<void>
 {
 	try
 	{
+		const project_root: string = core.getInput('project_root');
 		const type: string = core.getInput('type');
 		const github_token: string = core.getInput('github_token');
 		const verbose: string = core.getInput("verbose") || "false";
@@ -13,11 +14,13 @@ async function run(): Promise<void>
 
 		var build_command = new Array<string>();
 		build_command.push("libraries/build_tools/build_script/configure.py");
+		build_command.push("--working_dir");
+		build_command.push("build");
 		build_command.push("--platform");
 		build_command.push(type.toString());
 		build_command.push("--github_token");
 		build_command.push(github_token.toString());
-		build_command.push(".");
+		build_command.push(project_root);
 
 		if (verbose == "true")
 		{

@@ -1,14 +1,17 @@
 name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
+  github_token:
+    description: 'The github authentication token'
+    required: true
   os:
     description: 'The operating system'
     required: true
+  project_root:
+    description: 'The project folder'
+    required: true
   type:
     description: 'The build type'
-    required: true
-  github_token:
-    description: 'The github authentication token'
     required: true
   verbose:
     description: 'Verbose mode'
