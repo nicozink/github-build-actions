@@ -21,8 +21,9 @@
   },
   "homepage": "https://github.com/nicozink/github-build-actions#readme",
   "dependencies": {
-	"@actions/core": "^1.1.0",
+	"@types/node": "*",
+	"@actions/core": "*",
 	"@actions/exec": "*",
-    "@actions/github": "^1.1.0"
+	"typescript": "*"
   }
 }

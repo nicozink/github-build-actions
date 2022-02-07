@@ -10,28 +10,29 @@ async function run(): Promise<void>
 		const github_token: string = core.getInput('github_token');
 		const verbose: string = core.getInput("verbose") || "false";
 
-		await exec.exec("git", ["clone", "https://github.com/nicozink/build_tools"]);
-
 		var build_command = new Array<string>();
-		build_command.push("build_tools/build_script/configure.py");
-		build_command.push("--working_dir");
+		build_command.push("--build");
 		build_command.push("build");
-		build_command.push("--platform");
-		build_command.push(type.toString());
-		build_command.push("--github_token");
-		build_command.push(github_token.toString());
-		build_command.push(project_root);
+		build_command.push("--config");
+		build_command.push("Release");
+		build_command.push("-DGITHUB_TOKEN=" + github_token.toString());
 
-		if (verbose == "true")
-		{
-			build_command.push("--verbose");
-		}
+		await exec.exec("cmake", build_command);
 
-		await exec.exec("python", build_command);
+		var test_command = new Array<string>();
+		test_command.push("-VV");
+		test_command.push("-C");
+		test_command.push("Release");
+
+		await exec.exec("ctest", test_command);
+
 	}
-	catch (error)
+	catch (error: unknown)
 	{
-		core.setFailed(error.message);
+		if (error instanceof Error)
+		{
+			core.setFailed(error.message);
+		}
 	}
 }
 
