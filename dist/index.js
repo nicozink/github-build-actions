@@ -2731,8 +2731,6 @@ function run() {
             config_command.push("build");
             config_command.push("-S");
             config_command.push(project_root);
-            config_command.push("--config");
-            config_command.push("Release");
             config_command.push("-DGITHUB_TOKEN=" + github_token.toString());
             yield exec.exec("cmake", config_command);
             var build_command = new Array();
