@@ -2733,6 +2733,10 @@ function run() {
             config_command.push(project_root);
             config_command.push("-DGITHUB_TOKEN=" + github_token.toString());
             yield exec.exec("cmake", config_command);
+            var restore_command = new Array();
+            restore_command.push("restore");
+            restore_command.push("build/" + project_root + ".sln");
+            yield exec.exec("dotnet", restore_command);
             var build_command = new Array();
             build_command.push("--build");
             build_command.push("build");

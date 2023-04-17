@@ -19,6 +19,12 @@ async function run(): Promise<void>
 
 		await exec.exec("cmake", config_command);
 
+		var restore_command = new Array<string>();
+		restore_command.push("restore");
+		restore_command.push("build/" + project_root + ".sln");
+
+		await exec.exec("dotnet", restore_command);
+
 		var build_command = new Array<string>();
 		build_command.push("--build");
 		build_command.push("build");
